@@ -14,7 +14,8 @@ export default class App extends Component {
 
   componentWillReceiveProps(nextProps) {
     if(nextProps.option !== this.props.option) {
-      this.refs.chart.reload();
+      //this.refs.chart.reload();
+      this.setNewOption(nextProps.option);
     }
   }
 
@@ -23,11 +24,14 @@ export default class App extends Component {
   }
 
   render() {
+    const source = (Platform.OS === 'ios') ? require('./tpl.html') : {'uri':'file:///android_asset/tpl.html'}
+
     return (
       <View style={{flex: 1, height: this.props.height || 400,}}>
         <WebView
           ref="chart"
           scrollEnabled = {false}
+          useWebKit = { Platform.OS === 'ios' ? true : false }
           injectedJavaScript = {renderChart(this.props)}
           style={{
             height: this.props.height || 400,
@@ -35,7 +39,7 @@ export default class App extends Component {
           }}
           scalesPageToFit={Platform.OS !== 'ios'}
           originWhitelist={['*']}
-          source={require('./tpl.html')}
+          source={source}
           onMessage={event => this.props.onPress ? this.props.onPress(JSON.parse(event.nativeEvent.data)) : null}
         />
       </View>
